@@ -1,0 +1,106 @@
+#include <stdio.h>
+
+// Função para calcular o determinante de uma matriz 3x3 com double
+double determinante3x3(double mat[3][3]) {
+    double det;
+    det = mat[0][0] * (mat[1][1]*mat[2][2] - mat[1][2]*mat[2][1])
+        - mat[0][1] * (mat[1][0]*mat[2][2] - mat[1][2]*mat[2][0])
+        + mat[0][2] * (mat[1][0]*mat[2][1] - mat[1][1]*mat[2][0]);
+    return det;
+}
+
+// Função que substitui uma coluna da matriz pelos termos independentes
+void substituirColuna(double destino[3][3], double origem[3][3], double b[3], int coluna) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            destino[i][j] = (j == coluna) ? b[i] : origem[i][j];
+        }
+    }
+}
+
+// Função para exibir o sistema montado com formato legível
+void exibirSistema(double A[3][3], double b[3]) {
+    printf("\nSistema de equações montado:\n");
+    for (int i = 0; i < 3; i++) {
+        // Exibe primeiro termo sem sinal
+        printf("%.2lfx ", A[i][0]);
+
+        // Segundo termo com sinal
+        if (A[i][1] >= 0)
+            printf("+ %.2lfy ", A[i][1]);
+        else
+            printf("- %.2lfy ", -A[i][1]);
+
+        // Terceiro termo com sinal
+        if (A[i][2] >= 0)
+            printf("+ %.2lfz ", A[i][2]);
+        else
+            printf("- %.2lfz ", -A[i][2]);
+
+        // Igualdade
+        printf("= %.2lf\n", b[i]);
+    }
+}
+
+int main() {
+    double A[3][3];     // Matriz dos coeficientes
+    double D, Dx, Dy, Dz;
+    double b[3];        // Termos independentes
+    double temp[3][3];  // Matriz temporária para substituições
+
+    // Leitura dos coeficientes
+    printf("Digite os coeficientes do sistema (3x3):\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf("A[%d][%d]: ", i+1, j+1);
+            scanf("%lf", &A[i][j]);
+        }
+    }
+
+    // Leitura dos termos independentes
+    printf("Digite os termos independentes:\n");
+    for (int i = 0; i < 3; i++) {
+        printf("b[%d]: ", i+1);
+        scanf("%lf", &b[i]);
+    }
+
+    // Exibir o sistema formatado com x, y, z
+    exibirSistema(A, b);
+
+    // Determinante principal
+    D = determinante3x3(A);
+
+    if (D == 0) {
+        printf("\nO sistema não tem solução única (D = 0).\n");
+        return 0;
+    }
+
+    // Calcular Dx, Dy, Dz
+    substituirColuna(temp, A, b, 0);
+    Dx = determinante3x3(temp);
+
+    substituirColuna(temp, A, b, 1);
+    Dy = determinante3x3(temp);
+
+    substituirColuna(temp, A, b, 2);
+    Dz = determinante3x3(temp);
+
+    // Exibir resultados
+    printf("\nDeterminantes:\n");
+    printf("D  = %.4lf\n", D);
+    printf("Dx = %.4lf\n", Dx);
+    printf("Dy = %.4lf\n", Dy);
+    printf("Dz = %.4lf\n", Dz);
+
+    // Soluções
+    double x = Dx / D;
+    double y = Dy / D;
+    double z = Dz / D;
+
+    printf("\nSoluções do sistema:\n");
+    printf("x = %.4lf\n", x);
+    printf("y = %.4lf\n", y);
+    printf("z = %.4lf\n", z);
+
+    return 0;
+}
